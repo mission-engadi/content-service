@@ -5,7 +5,7 @@ This module aggregates all API routers for version 1.
 
 from fastapi import APIRouter
 
-from app.api.v1.endpoints import content, examples, health, translations
+from app.api.v1.endpoints import content, examples, health, translations, media
 
 api_router = APIRouter()
 
@@ -28,6 +28,15 @@ api_router.include_router(
     translations.router,
     prefix="/content",
     tags=["translations"],
+)
+
+# Media routes with two path patterns:
+# 1. /media/content/{content_id}/upload - for content-specific media upload
+# 2. /media/* - for direct media access
+api_router.include_router(
+    media.router,
+    prefix="/media",
+    tags=["media"],
 )
 
 api_router.include_router(

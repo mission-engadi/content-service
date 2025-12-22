@@ -63,6 +63,11 @@ class Settings(BaseSettings):
     # External Services
     AUTH_SERVICE_URL: str = "http://localhost:8001"
     
+    # Media & Storage
+    UPLOAD_DIR: str = "/home/ubuntu/content_service/uploads"
+    BASE_URL: str = "http://localhost:8002"  # Base URL for file serving
+    MAX_UPLOAD_SIZE: int = 100 * 1024 * 1024  # 100 MB
+    
     # Logging
     LOG_LEVEL: str = "INFO"
     LOG_FORMAT: str = "json"  # json or text

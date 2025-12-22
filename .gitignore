@@ -65,3 +65,7 @@ logs/
 # Temporary files
 *.tmp
 .cache/
+
+# Uploads
+uploads/
+!uploads/.gitkeep
