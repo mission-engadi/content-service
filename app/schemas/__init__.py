@@ -10,6 +10,7 @@ from app.schemas.content import (
     ContentWithMedia,
     ContentFull,
     ContentList,
+    ContentStatusChange,
 )  # noqa: F401
 
 from app.schemas.translation import (
@@ -41,6 +42,7 @@ __all__ = [
     "ContentWithMedia",
     "ContentFull",
     "ContentList",
+    "ContentStatusChange",
     # Translation schemas
     "TranslationBase",
     "TranslationCreate",

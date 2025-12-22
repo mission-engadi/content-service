@@ -3,17 +3,15 @@
 Defines Pydantic models for content-related operations.
 """
 
+from __future__ import annotations
+
 import uuid
 from datetime import datetime
-from typing import Optional, TYPE_CHECKING
+from typing import Optional
 
 from pydantic import BaseModel, Field, ConfigDict
 
 from app.models.content import ContentType, ContentStatus
-
-if TYPE_CHECKING:
-    from app.schemas.translation import TranslationResponse
-    from app.schemas.media import MediaResponse
 
 
 class ContentBase(BaseModel):
@@ -169,7 +167,7 @@ class ContentResponse(ContentInDB):
 class ContentWithTranslations(ContentResponse):
     """Content schema with translations included."""
     
-    translations: list["TranslationResponse"] = Field(
+    translations: list[dict] = Field(
         default=[],
         description="Available translations",
     )
@@ -178,7 +176,7 @@ class ContentWithTranslations(ContentResponse):
 class ContentWithMedia(ContentResponse):
     """Content schema with media included."""
     
-    media: list["MediaResponse"] = Field(
+    media: list[dict] = Field(
         default=[],
         description="Associated media files",
     )
@@ -187,11 +185,11 @@ class ContentWithMedia(ContentResponse):
 class ContentFull(ContentResponse):
     """Content schema with all relationships."""
     
-    translations: list["TranslationResponse"] = Field(
+    translations: list[dict] = Field(
         default=[],
         description="Available translations",
     )
-    media: list["MediaResponse"] = Field(
+    media: list[dict] = Field(
         default=[],
         description="Associated media files",
     )
@@ -224,4 +222,14 @@ class ContentList(BaseModel):
         ...,
         ge=0,
         description="Total number of pages",
+    )
+
+
+class ContentStatusChange(BaseModel):
+    """Schema for changing content status."""
+    
+    status: ContentStatus = Field(
+        ...,
+        description="New status to set",
+        examples=[ContentStatus.PUBLISHED],
     )
