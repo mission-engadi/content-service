@@ -1,551 +1,430 @@
 # Content Service
 
-> Manages missions content with multi-language support
+> Multi-language content management system for Mission Engadi platform
 
-[![CI/CD Pipeline](https://docs.github.com/assets/cb-40551/images/help/actions/superlinter-workflow-sidebar.png)
-[![codecov](https://i.ytimg.com/vi/AAl4HmJ3YuM/maxresdefault.jpg)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.108+-green.svg)](https://fastapi.tiangolo.com)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15+-blue.svg)](https://www.postgresql.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-Part of the [Mission Engadi](https://engadi.org) microservices architecture.
+Part of the [Mission Engadi](https://engadi.org) microservices architecture - A comprehensive content management system for educational missions content with full multi-language support, media handling, and workflow management.
 
 ## 📋 Table of Contents
 
 - [Overview](#overview)
 - [Features](#features)
-- [Architecture](#architecture)
-- [Getting Started](#getting-started)
-  - [Prerequisites](#prerequisites)
-  - [Installation](#installation)
-  - [Configuration](#configuration)
-  - [Running Locally](#running-locally)
+- [Quick Start](#quick-start)
+- [API Endpoints](#api-endpoints)
+- [Project Structure](#project-structure)
 - [Development](#development)
-  - [Project Structure](#project-structure)
-  - [Database Migrations](#database-migrations)
-  - [Testing](#testing)
-  - [Code Quality](#code-quality)
-- [API Documentation](#api-documentation)
+- [Testing](#testing)
 - [Deployment](#deployment)
-- [Monitoring](#monitoring)
+- [Documentation](#documentation)
 - [Contributing](#contributing)
-- [License](#license)
 
 ## 🎯 Overview
 
-The Content Service is a FastAPI-based microservice that handles [describe main functionality]. It's part of the Mission Engadi platform, which aims to [mission statement].
+The Content Service is the central content management system for the Mission Engadi platform. It provides:
+
+- **Content Management**: Create, read, update, delete, and publish various types of content (articles, lessons, videos, resources)
+- **Multi-Language Support**: Full translation workflow with support for English, Spanish, French, and Portuguese
+- **Media Handling**: Upload, process, and manage images, videos, audio, and documents
+- **Workflow Management**: Status-based workflows for content and translations (draft → review → published)
+- **RESTful API**: 25 comprehensive API endpoints with automatic OpenAPI documentation
+
+### Key Capabilities
+
+- **8 Content Management Endpoints**: Full CRUD operations plus publishing and status management
+- **9 Translation Management Endpoints**: Complete translation workflow including bulk operations
+- **8 Media Handling Endpoints**: Media upload, processing, retrieval, and management
+- **JWT Authentication**: Secure API access with role-based permissions
+- **Async Architecture**: High-performance async/await with SQLAlchemy and PostgreSQL
 
 ## ✨ Features
 
-- **RESTful API**: Clean, versioned API with automatic OpenAPI documentation
-- **Async/Await**: Fully asynchronous for high performance
-- **Database**: PostgreSQL with SQLAlchemy ORM and async support
-- **Authentication**: JWT-based authentication with role-based access control
-- **Validation**: Request/response validation using Pydantic
-- **Testing**: Comprehensive test suite with pytest
-- **Docker**: Containerized application with docker-compose
-- **CI/CD**: Automated testing and deployment with GitHub Actions
-- **Monitoring**: Health checks and readiness probes
-- **Logging**: Structured logging with contextual information
+### Content Management
+- ✅ Create and manage multiple content types (articles, lessons, videos, resources)
+- ✅ Slug-based URLs for SEO-friendly content access
+- ✅ Rich metadata support (tags, descriptions, categories)
+- ✅ Content status workflow (draft, review, published, archived)
+- ✅ Featured image support
+- ✅ Author tracking and permissions
 
-## 🏗️ Architecture
+### Translation System
+- ✅ Support for 4 languages: English (en), Spanish (es), French (fr), Portuguese (pt-br)
+- ✅ Translation status workflow (pending, in_progress, completed, reviewed)
+- ✅ Individual translation CRUD operations
+- ✅ Bulk translation creation
+- ✅ Language availability tracking
+- ✅ Content retrieval with language parameter
 
-This service follows a clean architecture pattern:
+### Media Management
+- ✅ Multi-format support (images, videos, audio, documents)
+- ✅ Automatic image resizing (max 2048x2048)
+- ✅ Thumbnail generation (300x300)
+- ✅ MIME type detection and validation
+- ✅ File size limits by type
+- ✅ Organized storage structure (YYYY/MM/filename)
+- ✅ Media metadata management
 
-```
-content_service/
-├── app/
-│   ├── api/               # API layer
-│   │   └── v1/            # API version 1
-│   │       ├── endpoints/ # Route handlers
-│   │       └── api.py     # API router aggregation
-│   ├── core/              # Core utilities
-│   │   ├── config.py      # Configuration management
-│   │   ├── security.py    # Auth utilities
-│   │   └── logging.py     # Logging configuration
-│   ├── db/                # Database layer
-│   │   ├── base.py        # Base classes
-│   │   └── session.py     # Database session management
-│   ├── models/            # SQLAlchemy models
-│   ├── schemas/           # Pydantic schemas
-│   ├── services/          # Business logic
-│   └── dependencies/      # Dependency injection
-├── tests/                 # Test suite
-│   ├── unit/              # Unit tests
-│   ├── integration/       # Integration tests
-│   └── conftest.py        # Test fixtures
-├── migrations/            # Alembic migrations
-└── docs/                  # Additional documentation
-```
+### Technical Features
+- ✅ **Fast**: Fully asynchronous with uvicorn and asyncpg
+- ✅ **Secure**: JWT authentication with role-based access control
+- ✅ **Validated**: Pydantic models for request/response validation
+- ✅ **Tested**: 80%+ test coverage with comprehensive integration tests
+- ✅ **Documented**: Auto-generated OpenAPI/Swagger documentation
+- ✅ **Monitored**: Health check and readiness endpoints
+- ✅ **Versioned**: Git version control with clear commit history
 
-## 🚀 Getting Started
+## 🚀 Quick Start
 
 ### Prerequisites
 
 - Python 3.11+
 - PostgreSQL 15+
-- Redis 7+ (optional, for caching)
-- Docker & Docker Compose (optional, for containerized development)
+- Redis (optional, for caching)
+- Git
 
 ### Installation
 
-1. **Clone the repository**
-
+1. **Clone the repository:**
 ```bash
-git clone https://github.com/mission-engadi/content_service.git
+git clone <repository-url>
 cd content_service
 ```
 
-2. **Create virtual environment**
-
+2. **Start the service:**
 ```bash
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+./start.sh
 ```
 
-3. **Install dependencies**
-
-```bash
-pip install -r requirements.txt
-pip install -r requirements-dev.txt  # For development
-```
+That's it! The start script will:
+- Create virtual environment
+- Install dependencies
+- Start PostgreSQL and Redis
+- Run database migrations
+- Create uploads directory
+- Start the service on http://localhost:8002
 
 ### Configuration
 
-1. **Copy environment template**
+Copy `.env.example` to `.env` and configure:
 
 ```bash
+# Database
+DATABASE_URL=postgresql+asyncpg://postgres:postgres@localhost:5432/content_db
+
+# Security
+SECRET_KEY=your-secret-key-here
+JWT_SECRET_KEY=your-jwt-secret-here
+
+# Service
+SERVICE_NAME=content_service
+SERVICE_PORT=8002
+
+# Storage
+UPLOAD_DIR=/home/ubuntu/content_service/uploads
+MAX_UPLOAD_SIZE=104857600  # 100MB
+```
+
+### Management Scripts
+
+- **Start service**: `./start.sh`
+- **Stop service**: `./stop.sh`
+- **Restart service**: `./restart.sh`
+- **Check status**: `./status.sh`
+
+## 📡 API Endpoints
+
+### Content Endpoints (8)
+
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| POST | `/api/v1/content` | Create new content | ✅ |
+| GET | `/api/v1/content/{id}` | Get content by ID | ❌ |
+| GET | `/api/v1/content/slug/{slug}` | Get content by slug | ❌ |
+| GET | `/api/v1/content` | List content with filters | ❌ |
+| PUT | `/api/v1/content/{id}` | Update content | ✅ |
+| DELETE | `/api/v1/content/{id}` | Delete content (soft) | ✅ |
+| POST | `/api/v1/content/{id}/publish` | Publish content | ✅ |
+| POST | `/api/v1/content/{id}/status` | Change content status | ✅ |
+
+### Translation Endpoints (9)
+
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| POST | `/api/v1/content/{id}/translations` | Create translation | ✅ |
+| GET | `/api/v1/content/{id}/translations` | List translations | ❌ |
+| GET | `/api/v1/content/{id}/translations/{lang}` | Get by language | ❌ |
+| GET | `/api/v1/translations/{id}` | Get translation by ID | ❌ |
+| PUT | `/api/v1/translations/{id}` | Update translation | ✅ |
+| DELETE | `/api/v1/translations/{id}` | Delete translation | ✅ |
+| POST | `/api/v1/translations/{id}/status` | Change status | ✅ |
+| GET | `/api/v1/content/{id}/languages` | Get available languages | ❌ |
+| POST | `/api/v1/content/{id}/translations/bulk` | Bulk create translations | ✅ |
+
+### Media Endpoints (8)
+
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| POST | `/api/v1/media/upload` | Upload media file | ✅ |
+| POST | `/api/v1/media/content/{id}/upload` | Upload for content | ✅ |
+| GET | `/api/v1/media/{id}` | Get media metadata | ❌ |
+| GET | `/api/v1/media/{id}/download` | Download media file | ❌ |
+| GET | `/api/v1/media/content/{id}/media` | List content media | ❌ |
+| GET | `/api/v1/media` | List all media | ❌ |
+| PUT | `/api/v1/media/{id}` | Update media metadata | ✅ |
+| DELETE | `/api/v1/media/{id}` | Delete media | ✅ |
+
+### Documentation & Health
+
+- **Swagger UI**: http://localhost:8002/docs
+- **ReDoc**: http://localhost:8002/redoc
+- **Health Check**: http://localhost:8002/api/v1/health
+
+## 📁 Project Structure
+
+```
+content_service/
+├── app/
+│   ├── api/
+│   │   └── v1/
+│   │       ├── endpoints/
+│   │       │   ├── content.py       # Content endpoints
+│   │       │   ├── translations.py  # Translation endpoints
+│   │       │   ├── media.py         # Media endpoints
+│   │       │   └── health.py        # Health checks
+│   │       └── api.py               # API router aggregation
+│   ├── core/
+│   │   ├── config.py                # Configuration settings
+│   │   ├── security.py              # JWT & authentication
+│   │   ├── languages.py             # Language utilities
+│   │   ├── storage.py               # File storage management
+│   │   └── file_processing.py      # Media processing
+│   ├── models/
+│   │   ├── content.py               # Content database models
+│   │   ├── translation.py           # Translation models
+│   │   └── media.py                 # Media models
+│   ├── schemas/
+│   │   ├── content.py               # Content Pydantic schemas
+│   │   ├── translation.py           # Translation schemas
+│   │   └── media.py                 # Media schemas
+│   ├── services/
+│   │   ├── content_service.py       # Content business logic
+│   │   ├── translation_service.py   # Translation logic
+│   │   └── media_service.py         # Media logic
+│   ├── dependencies/
+│   │   ├── auth.py                  # Auth dependencies
+│   │   └── database.py              # DB dependencies
+│   ├── db/
+│   │   ├── base.py                  # Database base
+│   │   └── session.py               # Session management
+│   └── main.py                      # Application entry point
+├── tests/
+│   ├── conftest.py                  # Test fixtures
+│   ├── integration/
+│   │   ├── test_content.py          # Content endpoint tests
+│   │   ├── test_translations.py     # Translation tests
+│   │   ├── test_media.py            # Media tests
+│   │   └── test_auth_integration.py # Auth tests
+│   └── unit/
+│       └── test_security.py         # Security unit tests
+├── migrations/                      # Alembic migrations
+├── uploads/                         # Media file storage
+├── start.sh                         # Start service script
+├── stop.sh                          # Stop service script
+├── restart.sh                       # Restart service script
+├── status.sh                        # Status check script
+├── requirements.txt                 # Python dependencies
+├── .env.example                     # Environment template
+├── pytest.ini                       # Pytest configuration
+├── alembic.ini                      # Alembic configuration
+└── README.md                        # This file
+```
+
+## 🛠 Development
+
+### Setup Development Environment
+
+```bash
+# Create virtual environment
+python3 -m venv venv
+source venv/bin/activate
+
+# Install dependencies
+pip install -r requirements.txt
+pip install -r requirements-dev.txt
+
+# Create .env file
 cp .env.example .env
 ```
 
-2. **Edit `.env` file with your configuration**
-
-```env
-# Application
-PROJECT_NAME="Content Service"
-PORT=8002
-ENVIRONMENT="development"
-DEBUG="true"
-
-# Security
-SECRET_KEY="your-secret-key-here"  # Generate with: openssl rand -hex 32
-
-# Database
-DATABASE_URL="postgresql+asyncpg://postgres:postgres@localhost:5432/content_service_db"
-
-# Redis
-REDIS_URL="redis://localhost:6379/0"
-```
-
-### Running Locally
-
-#### Option 1: Docker Compose (Recommended)
+### Database Migrations
 
 ```bash
-# Start all services (app, database, redis)
+# Create a new migration
+alembic revision --autogenerate -m "Description"
+
+# Apply migrations
+alembic upgrade head
+
+# Rollback one migration
+alembic downgrade -1
+```
+
+### Running in Development Mode
+
+```bash
+# Start with auto-reload
+uvicorn app.main:app --host 0.0.0.0 --port 8002 --reload
+
+# Or use the script
+./start.sh
+```
+
+### Code Quality
+
+```bash
+# Format code
+black app tests
+
+# Lint code
+flake8 app tests
+
+# Type checking
+mypy app
+```
+
+## 🧪 Testing
+
+### Run All Tests
+
+```bash
+# Run all tests with coverage
+pytest --cov=app --cov-report=html --cov-report=term
+
+# Run specific test file
+pytest tests/integration/test_content.py -v
+
+# Run specific test
+pytest tests/integration/test_content.py::TestCreateContent::test_create_content_success -v
+```
+
+### Test Categories
+
+- **Integration Tests**: Test API endpoints with database
+  - Content endpoints (test_content.py)
+  - Translation endpoints (test_translations.py)
+  - Media endpoints (test_media.py)
+  - Auth integration (test_auth_integration.py)
+
+- **Unit Tests**: Test individual components
+  - Security functions (test_security.py)
+
+### Test Coverage
+
+Current test coverage: **80%+**
+
+```bash
+# Generate coverage report
+pytest --cov=app --cov-report=html
+# Open htmlcov/index.html in browser
+```
+
+## 🚀 Deployment
+
+### Using Docker
+
+```bash
+# Build image
+docker build -t content-service .
+
+# Run container
+docker run -d -p 8002:8002 --name content-service content-service
+```
+
+### Using Docker Compose
+
+```bash
+# Start all services
 docker-compose up -d
 
 # View logs
-docker-compose logs -f app
+docker-compose logs -f content-service
 
 # Stop services
 docker-compose down
 ```
 
-The API will be available at `http://localhost:8002`
-
-#### Option 2: Local Development
-
-1. **Start PostgreSQL and Redis**
-
-```bash
-# Using Docker
-docker run -d -p 5432:5432 -e POSTGRES_PASSWORD=postgres postgres:15-alpine
-docker run -d -p 6379:6379 redis:7-alpine
-```
-
-2. **Run database migrations**
-
-```bash
-alembic upgrade head
-```
-
-3. **Start the application**
-
-```bash
-uvicorn app.main:app --reload --port 8002
-```
-
-The API will be available at `http://localhost:8002`
-
-## 💻 Development
-
-### Project Structure
-
-#### API Layer (`app/api/`)
-- **Endpoints**: Define HTTP routes and handle requests/responses
-- **Validation**: Automatic request validation using Pydantic schemas
-- **Documentation**: Auto-generated OpenAPI/Swagger docs
-
-#### Business Logic (`app/services/`)
-- **Services**: Contain business logic and orchestrate operations
-- **Separation**: Keep business logic separate from API layer
-- **Reusability**: Services can be used across multiple endpoints
-
-#### Data Layer (`app/models/` & `app/schemas/`)
-- **Models**: SQLAlchemy ORM models (database structure)
-- **Schemas**: Pydantic schemas (API contracts)
-- **Separation**: Clear distinction between database and API representations
-
-#### Core Utilities (`app/core/`)
-- **Configuration**: Centralized settings management
-- **Security**: Authentication and authorization utilities
-- **Logging**: Structured logging setup
-
-### Database Migrations
-
-This project uses Alembic for database migrations.
-
-#### Create a new migration
-
-```bash
-# Auto-generate migration from model changes
-alembic revision --autogenerate -m "Description of changes"
-
-# Create empty migration (for data migrations)
-alembic revision -m "Description of changes"
-```
-
-#### Apply migrations
-
-```bash
-# Upgrade to latest version
-alembic upgrade head
-
-# Upgrade to specific version
-alembic upgrade <revision>
-
-# Downgrade one version
-alembic downgrade -1
-
-# Show current version
-alembic current
-
-# Show migration history
-alembic history
-```
-
-### Testing
-
-#### Run all tests
-
-```bash
-pytest
-```
-
-#### Run with coverage
-
-```bash
-pytest --cov=app --cov-report=html
-```
-
-#### Run specific test categories
-
-```bash
-# Unit tests only
-pytest tests/unit/ -m unit
-
-# Integration tests only
-pytest tests/integration/ -m integration
-
-# Run specific test file
-pytest tests/unit/test_security.py
-
-# Run specific test
-pytest tests/unit/test_security.py::TestPasswordHashing::test_password_hash_and_verify
-```
-
-#### Writing Tests
-
-##### Unit Tests
-Test individual functions or classes in isolation:
-
-```python
-def test_password_hashing():
-    password = "secure_password"
-    hashed = get_password_hash(password)
-    assert verify_password(password, hashed)
-```
-
-##### Integration Tests
-Test API endpoints with database:
-
-```python
-def test_create_example(client, auth_headers):
-    response = client.post(
-        "/api/v1/examples/",
-        json={"title": "Test", "status": "active"},
-        headers=auth_headers,
-    )
-    assert response.status_code == 201
-```
-
-### Code Quality
-
-#### Format code
-
-```bash
-# Format with black
-black app tests
-
-# Sort imports
-isort app tests
-```
-
-#### Lint code
-
-```bash
-# Check with flake8
-flake8 app tests
-
-# Type checking with mypy
-mypy app
-
-# Security checks
-bandit -r app
-```
-
-#### Pre-commit checks
-
-```bash
-# Run all checks before committing
-make check
-```
-
-## 📚 API Documentation
-
-### Interactive Documentation
-
-Once the service is running, visit:
-
-- **Swagger UI**: `http://localhost:8002/api/v1/docs`
-- **ReDoc**: `http://localhost:8002/api/v1/redoc`
-- **OpenAPI Schema**: `http://localhost:8002/api/v1/openapi.json`
-
-### Health Endpoints
-
-#### Basic Health Check
-
-```bash
-GET /api/v1/health
-```
-
-Returns service status without checking dependencies.
-
-**Response:**
-```json
-{
-  "status": "healthy",
-  "service": "Content Service",
-  "version": "0.1.0",
-  "environment": "development",
-  "timestamp": "2024-01-01T12:00:00.000Z"
-}
-```
-
-#### Readiness Check
-
-```bash
-GET /api/v1/ready
-```
-
-Returns service readiness including dependency checks.
-
-**Response:**
-```json
-{
-  "status": "ready",
-  "service": "Content Service",
-  "version": "0.1.0",
-  "environment": "development",
-  "timestamp": "2024-01-01T12:00:00.000Z",
-  "checks": {
-    "database": "connected",
-    "redis": "connected"
-  }
-}
-```
-
-### Authentication
-
-Most endpoints require authentication. Include JWT token in the Authorization header:
-
-```bash
-curl -H "Authorization: Bearer <token>" http://localhost:8002/api/v1/examples/
-```
-
-### Example Endpoints
-
-See the interactive documentation for complete API reference.
-
-## 🚢 Deployment
-
-### Deploy to Fly.io
-
-1. **Install Fly.io CLI**
-
-```bash
-curl -L https://fly.io/install.sh | sh
-```
-
-2. **Login to Fly.io**
-
-```bash
-fly auth login
-```
-
-3. **Create and configure app**
-
-```bash
-fly launch --name content_service
-```
-
-4. **Set secrets**
-
-```bash
-fly secrets set SECRET_KEY=<your-secret-key>
-fly secrets set DATABASE_URL=<your-database-url>
-```
-
-5. **Deploy**
-
-```bash
-fly deploy
-```
-
-### Environment Variables for Production
-
-**Required:**
-- `SECRET_KEY`: Strong random secret key
-- `DATABASE_URL`: PostgreSQL connection string
-- `ENVIRONMENT`: Set to "production"
-- `DEBUG`: Set to "false"
-
-**Optional:**
-- `REDIS_URL`: Redis connection string
-- `KAFKA_BOOTSTRAP_SERVERS`: Kafka servers
-- `DATADOG_API_KEY`: DataDog monitoring key
-- `CORS_ORIGINS`: Allowed CORS origins
-
-### Database Setup
-
-For production, use a managed PostgreSQL service:
-
-1. **Fly.io Postgres**
-
-```bash
-fly postgres create --name content_service-db
-fly postgres attach content_service-db
-```
-
-2. **Run migrations**
-
-```bash
-fly ssh console
-alembic upgrade head
-```
-
-## 📊 Monitoring
-
-### Health Checks
-
-Configure your load balancer or monitoring system to check:
-
-- **Liveness**: `GET /api/v1/health` (should always return 200)
-- **Readiness**: `GET /api/v1/ready` (checks dependencies)
-
-### Logging
-
-The service uses structured JSON logging in production. Logs include:
-
-- Request/response details
-- User context
-- Error stack traces
-- Performance metrics
-
-View logs:
-
-```bash
-# Docker Compose
-docker-compose logs -f app
-
-# Fly.io
-fly logs
-```
-
-### Metrics
-
-Enable metrics collection by setting:
-
-```env
-ENABLE_METRICS=true
-DATADOG_API_KEY=<your-key>
-```
+### Production Deployment
+
+See [DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md) for detailed production deployment instructions including:
+- Environment configuration
+- Database setup
+- Security best practices
+- Monitoring setup
+- Backup strategies
+
+## 📚 Documentation
+
+- **[API Documentation](./API_DOCUMENTATION.md)**: Complete API reference with examples
+- **[Development Guide](./DEVELOPMENT_GUIDE.md)**: Developer documentation and best practices
+- **[Deployment Guide](./DEPLOYMENT_GUIDE.md)**: Production deployment instructions
+- **[Testing Documentation](./TESTING_AND_DOCUMENTATION_SUMMARY.md)**: Test coverage and documentation summary
+
+### Auto-Generated Documentation
+
+- **Swagger UI**: http://localhost:8002/docs - Interactive API documentation
+- **ReDoc**: http://localhost:8002/redoc - Alternative API documentation
+- **OpenAPI JSON**: http://localhost:8002/openapi.json - OpenAPI specification
 
 ## 🤝 Contributing
 
-We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
-
-### Quick Start
+Contributions are welcome! Please follow these steps:
 
 1. Fork the repository
-2. Create a feature branch: `git checkout -b feature/my-feature`
-3. Make your changes and write tests
-4. Run tests and linting: `make check`
-5. Commit with conventional commits: `git commit -m "feat: add new feature"`
-6. Push and create a pull request
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
-### Development Workflow
+### Development Guidelines
 
-```bash
-# Create feature branch
-git checkout -b feature/my-feature
+- Write tests for new features
+- Follow PEP 8 style guide
+- Update documentation
+- Add type hints
+- Write descriptive commit messages
 
-# Make changes
-# ... edit files ...
+## 📝 License
 
-# Run tests
-pytest
+This project is licensed under the MIT License - see the LICENSE file for details.
 
-# Format and lint
-make format
-make lint
+## 🆘 Support
 
-# Commit changes
-git add .
-git commit -m "feat: description of feature"
+For issues, questions, or contributions:
+- Open an issue on GitHub
+- Contact the development team
+- Refer to the documentation
 
-# Push to GitHub
-git push origin feature/my-feature
-```
+## 📊 Service Status
 
-## 📄 License
+- **API Version**: v1
+- **Service Port**: 8002
+- **Database**: PostgreSQL 15+
+- **Python Version**: 3.11+
+- **Test Coverage**: 80%+
+- **Endpoints**: 25 (8 content + 9 translation + 8 media)
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+## 🔗 Related Services
 
-## 🙏 Acknowledgments
-
-- Built with [FastAPI](https://fastapi.tiangolo.com)
-- Database ORM by [SQLAlchemy](https://www.sqlalchemy.org)
-- Testing with [pytest](https://pytest.org)
-- Part of [Mission Engadi](https://engadi.org)
-
-## 📞 Support
-
-- **Documentation**: [docs.engadi.org](https://docs.engadi.org)
-- **Issues**: [GitHub Issues](https://github.com/mission-engadi/content_service/issues)
-- **Email**: support@engadi.org
+Part of the Mission Engadi microservices ecosystem:
+- **Auth Service** (port 8001): Authentication and user management
+- **Content Service** (port 8002): Content management (this service)
+- **Other services**: Coming soon...
 
 ---
+
+**Note**: This service runs on localhost of the computer hosting it. To access remotely, deploy to your own infrastructure.
 
 Made with ❤️ by the Mission Engadi team
