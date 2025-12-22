@@ -61,17 +61,22 @@ async def create_content(
     "/{content_id}",
     response_model=ContentFull,
     summary="Get content by ID",
-    description="Get a content item by its ID. Includes translations and media. Public endpoint - authentication optional. Only published content is returned for unauthenticated users.",
+    description="Get a content item by its ID. Includes translations and media. If language parameter is provided, returns content with translated fields if translation exists. Public endpoint - authentication optional. Only published content is returned for unauthenticated users.",
 )
 async def get_content_by_id(
     content_id: uuid.UUID,
+    language: Optional[str] = Query(None, description="Requested language code (e.g., es, fr, pt-br). If provided and translation exists, returns translated version."),
     current_user: Optional[CurrentUser] = Depends(get_optional_user),
     db: AsyncSession = Depends(get_db),
 ) -> ContentFull:
     """Get content by ID with all related data.
     
+    If language parameter is provided and a translation exists, the response will
+    include translated title, body, and slug in the main content fields.
+    
     Args:
         content_id: UUID of the content
+        language: Optional language code for translation
         current_user: Optional authenticated user
         db: Database session
     
@@ -108,6 +113,27 @@ async def get_content_by_id(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="Not authorized to view this content",
             )
+    
+    # If language is requested and different from content's original language,
+    # try to find and apply translation
+    if language and language.lower() != content.language.lower():
+        from app.services.translation_service import TranslationService
+        from app.models.translation import TranslationStatus
+        
+        translation = await TranslationService.get_translation_by_language(
+            db, content_id, language
+        )
+        
+        # Only use completed or reviewed translations
+        if translation and translation.translation_status in [
+            TranslationStatus.COMPLETED,
+            TranslationStatus.REVIEWED,
+        ]:
+            # Apply translation to content fields
+            content.title = translation.translated_title
+            content.body = translation.translated_body
+            content.slug = translation.translated_slug
+            content.language = translation.language
     
     return ContentFull.model_validate(content)
 
